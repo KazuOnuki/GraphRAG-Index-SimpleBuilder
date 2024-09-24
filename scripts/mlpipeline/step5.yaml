@@ -1,0 +1,35 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+type: command
+name: step5
+display_name: chunk and resummarize doc step5
+version: 1
+
+inputs:
+  aoai_resource:
+    type: string
+
+  aoai_apikey:
+    type: string
+
+  aoai_model:
+    type: string
+
+  step2_output:
+    type: uri_folder
+
+  step5_input:
+    type: uri_folder
+
+outputs:
+  step5_output:
+    type: uri_folder
+
+code: ./src
+
+environment:
+  image: python
+
+command: >-
+  pip install tiktoken==0.6.0;
+  pip install openai==1.30.0;
+  python step5.py --aoai_resource ${{inputs.aoai_resource}} --aoai_apikey ${{inputs.aoai_apikey}} --aoai_model ${{inputs.aoai_model}} --step2_output ${{inputs.step2_output}} --step5_input ${{inputs.step5_input}} --step5_output ${{outputs.step5_output}};

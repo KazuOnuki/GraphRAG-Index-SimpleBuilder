@@ -1,0 +1,36 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "environmentName": {
+      "value": "${AZURE_ENV_NAME}"
+    },
+    "location": {
+      "value": "${AZURE_LOCATION}"
+    },
+    "mlprefix": {
+      "value": "${ML_PREFIX}"
+    },
+    "openAiResourceLocation": {
+      "value": "${OPENAI_RESOURCE_LOCATION}"
+    },
+    "openAIModel": {
+      "value": "${OPENAI_MODEL}"
+    },
+    "openAIModelName": {
+      "value": "${OPENAI_MODEL_NAME}"
+    },
+    "openAIModelVersion" : {
+      "value": "${OPENAI_MODEL_VERSION}"
+    },
+    "embeddingModelName": {
+      "value": "${EMBEDDING_MODEL_NAME}"
+    },
+    "embeddingDeploymentName": {
+      "value": "${EMBEDDING_DEPLOYMENT_NAME}"
+    },
+    "embeddingModelVersion": {
+      "value": "${EMBEDDING_MODEL_VERSION}"
+    }
+  }
+}

@@ -1,0 +1,28 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+type: command
+name: step9
+display_name: upload graphrag index to targeted storage step9
+version: 1
+
+inputs:
+  target_storage_account_name:
+    type: string
+  target_storage_api_key:
+    type: string
+  target_storage_container_name:
+    type: string
+  step9_input:
+    type: uri_folder
+
+outputs:
+  step9_output:
+    type: uri_folder
+
+code: ./src
+
+environment: 
+  image: python
+
+command: >-
+  pip install azure-storage-blob;
+  python step9.py --target_storage_account_name ${{inputs.target_storage_account_name}} --target_storage_api_key ${{inputs.target_storage_api_key}} --target_storage_container_name ${{inputs.target_storage_container_name}} --step9_input ${{inputs.step9_input}} --step9_output ${{outputs.step9_output}};

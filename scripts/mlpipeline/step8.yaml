@@ -1,0 +1,68 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+type: command
+name: step8
+display_name: download and create GraphRag Index step8
+version: 1
+
+inputs:
+  aoai_resource:
+    type: string
+    default: ''
+  aoai_apikey:
+    type: string
+    default: ''
+  aoai_model:
+    type: string
+    default: ''
+  aoai_embedding_model:
+    type: string
+    default: ''
+  storage_account_name:
+    type: string
+    default: ''
+  storage_apikey:
+    type: string
+    default: ''
+  storage_container_name:
+    type: string
+    default: ''
+  graphrag_setting:
+    type: uri_file
+  step8_input:
+    type: uri_folder
+
+outputs:
+  step8_output:
+    type: uri_folder
+
+code: ./src
+
+environment:
+  image: python
+
+command: >-
+  pip install azure-storage-blob ;
+  pip install graphrag ;
+
+  echo ${{inputs.step8_input}};
+
+  python step8.py --storage_account_name ${{inputs.storage_account_name}} --storage_apikey ${{inputs.storage_apikey}} --storage_container_name ${{inputs.storage_container_name}};
+  mkdir -p ${{outputs.step8_output}}/input ;
+  cp -r ./test ${{outputs.step8_output}}/input;
+  ls -l ${{outputs.step8_output}}/input ;
+
+  python -m graphrag.index --init --root ${{outputs.step8_output}};
+
+  cp ${{inputs.graphrag_setting}} ${{outputs.step8_output}}/settings.yaml
+
+  echo "GRAPHRAG_API_KEY=${{inputs.aoai_apikey}}" >> ${{outputs.step8_output}}/.env ;
+  echo "GRAPHRAG_LLM_MODEL=${{inputs.aoai_model}}" >> ${{outputs.step8_output}}/.env ;
+  echo "GRAPHRAG_API_BASE=https://${{inputs.aoai_resource}}.openai.azure.com" >> ${{outputs.step8_output}}/.env ;
+  echo "GRAPHRAG_API_VERSION='2024-06-01'" >> ${{outputs.step8_output}}/.env ;
+  echo "GRAPHRAG_LLM_DEPLOYMENT_NAME=${{inputs.aoai_model}}" >> ${{outputs.step8_output}}/.env ;
+  echo "GRAPHRAG_EMBEDDING_MODEL=${{inputs.aoai_embedding_model}}" >> ${{outputs.step8_output}}/.env ;
+  echo "GRAPHRAG_EMBEDDING_DEPLOYMENT_NAME=${{inputs.aoai_embedding_model}}" >> ${{outputs.step8_output}}/.env ;
+  echo "GRAPHRAG_EMBEDDING_API_BASE='https://${{inputs.aoai_resource}}.openai.azure.com'" >> ${{outputs.step8_output}}/.env ;
+
+  ls -l ${{outputs.step8_output}};
+  python -m graphrag.index --root ${{outputs.step8_output}};

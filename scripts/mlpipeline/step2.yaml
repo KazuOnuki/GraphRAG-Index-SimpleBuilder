@@ -1,0 +1,22 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+type: command
+name: step2
+display_name: data chunk step2
+version: 1
+
+inputs:
+  step2_input:
+    type: uri_folder
+
+outputs:
+  step2_output:
+    type: uri_folder
+
+code: ./src
+
+environment: 
+  image: python
+
+command: >-
+  pip install tiktoken==0.6.0;
+  python step2.py --step2_input ${{inputs.step2_input}} --step2_output ${{outputs.step2_output}};

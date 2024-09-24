@@ -1,0 +1,23 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+type: command
+name: step7
+display_name: analyze doc token histgram
+version: 1
+
+inputs:
+  step7_input:
+    type: uri_folder
+
+outputs:
+  step7_output:
+    type: uri_folder
+
+code: ./src
+
+environment: 
+  image: python
+
+command: >-
+  pip install tiktoken==0.6.0;
+  pip install matplotlib==3.9.0;
+  python step7.py --step7_input ${{inputs.step7_input}} --step7_output ${{outputs.step7_output}};

@@ -1,0 +1,141 @@
+$schema: https://azuremlschemas.azureedge.net/latest/pipelineJob.schema.json
+type: pipeline
+display_name: MS_HackathonDemo_Pipeline
+description: git_pull > preprocess > creating_graphrag_index
+settings:
+  default_compute: azureml:d13-v2-cluster
+  force_rerun: False  # if reuse case, set False.
+
+inputs:
+  pipeline_input_git_url: ""
+  pipeline_input_sparse_checkout_folder: ""
+  pipeline_input_aoai_apikey: ""
+  pipeline_input_aoai_model: ""
+  pipeline_input_aoai_embedding_model: ""
+  pipeline_input_aoai_resource: ""
+  pipeline_input_target_storage_account_name: ""
+  pipeline_input_target_storage_container_name: ""
+  pipeline_input_apikey: ""
+  pipeline_input_graphrag_storage_account_name: ""
+  pipeline_input_graphrag_storage_container_name: ""
+  pipeline_input_graphrag_apikey: ""
+
+jobs:
+  gitpull:
+    type: command
+    component: ./gitpull.yaml
+    inputs:
+      git_url: ${{parent.inputs.pipeline_input_git_url}}
+      sparse_checkout_folder: ${{parent.inputs.pipeline_input_sparse_checkout_folder}}
+    outputs:
+      gitpull_output:
+        mode: rw_mount
+
+  step1:
+    type: command
+    component: ./step1.yaml
+    inputs:
+      aoai_resource: ${{parent.inputs.pipeline_input_aoai_resource}}
+      aoai_apikey: ${{parent.inputs.pipeline_input_aoai_apikey}}
+      aoai_model: ${{parent.inputs.pipeline_input_aoai_model}}
+      step1_input: ${{parent.jobs.gitpull.outputs.gitpull_output}}
+    outputs:
+      step1_output:
+        mode: rw_mount
+
+  step2:
+    type: command
+    component: ./step2.yaml
+    inputs:
+      step2_input: ${{parent.jobs.step1.outputs.step1_output}}
+    outputs:
+      step2_output:
+        mode: rw_mount
+
+  step3:
+    type: command
+    component: ./step3.yaml
+    inputs:
+      step3_input: ${{parent.jobs.step2.outputs.step2_output}}
+    outputs:
+      step3_output:
+        mode: rw_mount
+
+  step4:
+    type: command
+    component: ./step4.yaml
+    inputs:
+      aoai_resource: ${{parent.inputs.pipeline_input_aoai_resource}}
+      aoai_apikey: ${{parent.inputs.pipeline_input_aoai_apikey}}
+      aoai_model: ${{parent.inputs.pipeline_input_aoai_model}}
+      step2_output: ${{parent.jobs.step2.outputs.step2_output}}
+      step4_input: ${{parent.jobs.step3.outputs.step3_output}}
+    outputs:
+      step4_output:
+        mode: rw_mount
+
+  step5:
+    type: command
+    component: ./step5.yaml
+    inputs:
+      aoai_resource: ${{parent.inputs.pipeline_input_aoai_resource}}
+      aoai_apikey: ${{parent.inputs.pipeline_input_aoai_apikey}}
+      aoai_model: ${{parent.inputs.pipeline_input_aoai_model}}
+      step2_output: ${{parent.jobs.step2.outputs.step2_output}}
+      step5_input: ${{parent.jobs.step4.outputs.step4_output}}
+    outputs:
+      step5_output:
+        mode: rw_mount
+
+  step6:
+    type: command
+    component: ./step6.yaml
+    inputs:
+      target_storage_account_input: ${{parent.inputs.pipeline_input_target_storage_account_name}}
+      target_storage_api_key_input: ${{parent.inputs.pipeline_input_apikey}}
+      target_storage_container_input: ${{parent.inputs.pipeline_input_target_storage_container_name}}
+      step6_input: ${{parent.jobs.step5.outputs.step5_output}}
+      step4_output: ${{parent.jobs.step4.outputs.step4_output}}
+    outputs:
+      step6_output:
+        mode: rw_mount
+
+  step7:
+    type: command
+    component: ./step7.yaml
+    inputs:
+      step7_input: ${{parent.jobs.step6.outputs.step6_output}}
+    outputs:
+      step7_output:
+        mode: rw_mount
+
+  step8:
+    type: command
+    component: ./step8.yaml
+    inputs:
+      storage_account_name: ${{parent.inputs.pipeline_input_target_storage_account_name}}
+      storage_apikey: ${{parent.inputs.pipeline_input_apikey}}
+      storage_container_name: ${{parent.inputs.pipeline_input_target_storage_container_name}}
+      aoai_resource: ${{parent.inputs.pipeline_input_aoai_resource}}
+      aoai_apikey: ${{parent.inputs.pipeline_input_aoai_apikey}}
+      aoai_model: ${{parent.inputs.pipeline_input_aoai_model}}
+      aoai_embedding_model: ${{parent.inputs.pipeline_input_aoai_embedding_model}}
+      step8_input: ${{parent.jobs.step6.outputs.step6_output}}
+      graphrag_setting:
+        type: uri_file
+        path: ./settings.yaml
+    outputs:
+      step8_output:
+        mode: rw_mount
+
+  step9:
+    type: command
+    component: ./step9.yaml
+    inputs:
+      target_storage_account_name: ${{parent.inputs.pipeline_input_graphrag_storage_account_name}}
+      target_storage_api_key: ${{parent.inputs.pipeline_input_graphrag_apikey}}
+      target_storage_container_name: ${{parent.inputs.pipeline_input_graphrag_storage_container_name}}
+      step9_input: ${{parent.jobs.step8.outputs.step8_output}}
+    outputs:
+      step9_output:
+        mode: rw_mount

@@ -1,0 +1,31 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+type: command
+name: step6
+display_name: complete doc step6
+version: 1
+
+inputs:
+  target_storage_account_input:
+    type: string
+  target_storage_api_key_input:
+    type: string
+  target_storage_container_input:
+    type: string
+  step6_input:
+    type: uri_folder
+  step4_output:
+    type: uri_folder
+
+outputs:
+  step6_output:
+    type: uri_folder
+
+code: ./src
+
+environment: 
+  image: python
+
+command: >-
+  pip install tiktoken==0.6.0;
+  pip install azure-storage-blob;
+  python step6.py --target_storage_account_input ${{inputs.target_storage_account_input}} --target_storage_api_key_input ${{inputs.target_storage_api_key_input}} --target_storage_container_input ${{inputs.target_storage_container_input}} --step6_input ${{inputs.step6_input}} --step4_output ${{inputs.step4_output}} --step6_output ${{outputs.step6_output}};

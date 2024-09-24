@@ -1,0 +1,48 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+type: command
+
+name: gitpull
+display_name: gitpull
+version: 1
+
+inputs:
+  git_url:
+    type: string
+    default: "https://github.com/MicrosoftDocs/azure-ai-docs.git"
+
+  sparse_checkout_folder:
+    type: string
+    default: "articles/machine-learning"
+
+outputs:
+  gitpull_output:
+    type: uri_folder
+
+environment:
+  image: python
+
+command: >-
+
+  # # Prod
+
+  echo ${{inputs.git_url}} && echo ${{inputs.sparse_checkout_folder}} &&
+  mkdir -p /mnt/azureml/gitrepo && cd /mnt/azureml/gitrepo &&
+  git init &&
+  git remote add origin ${{inputs.git_url}} &&
+  git config core.sparsecheckout true &&
+  git sparse-checkout set ${{inputs.sparse_checkout_folder}} &&
+  git pull origin main &&
+  mv ${{inputs.sparse_checkout_folder}} ${{outputs.gitpull_output}}
+
+
+  # # Test
+  # echo ${{inputs.git_url}} && echo ${{inputs.sparse_checkout_folder}} &&
+  # mkdir -p /mnt/azureml/gitrepo && cd /mnt/azureml/gitrepo &&
+  # git init &&
+  # git remote add origin ${{inputs.git_url}} &&
+  # git config core.sparsecheckout true &&
+  # git sparse-checkout set ${{inputs.sparse_checkout_folder}} &&
+  # git pull origin main &&
+  # first_md_files=$(find ${{inputs.sparse_checkout_folder}} -type f -name "*.md" | sort | head -n 5) &&
+  # mkdir -p ${{outputs.gitpull_output}} &&
+  # mv $first_md_files ${{outputs.gitpull_output}}/

@@ -1,0 +1,34 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+type: command
+name: step4
+display_name: summarize chunked doc step4
+version: 1
+
+inputs:
+  aoai_resource:
+    type: string
+  
+  aoai_apikey:
+    type: string
+
+  aoai_model:
+    type: string
+  
+  step2_output:
+    type: uri_folder
+
+  step4_input:
+    type: uri_folder
+
+outputs:
+  step4_output:
+    type: uri_folder
+
+code: ./src
+
+environment: 
+  image: python
+
+command: >-
+  pip install openai==1.30.0;
+  python step4.py --aoai_resource ${{inputs.aoai_resource}} --aoai_apikey ${{inputs.aoai_apikey}} --aoai_model ${{inputs.aoai_model}} --step2_output ${{inputs.step2_output}} --step4_input ${{inputs.step4_input}} --step4_output ${{outputs.step4_output}};
