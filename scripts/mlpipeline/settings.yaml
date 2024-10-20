@@ -2,7 +2,7 @@
 encoding_model: cl100k_base
 skip_workflows: []
 llm:
-  api_key: ${GRAPHRAG_API_KEY} #'8e343c29b51d41e288b8f2a8abe469fd'
+  api_key: ${GRAPHRAG_API_KEY} 
   type: azure_openai_chat # or azure_openai_chat
   model: ${GRAPHRAG_LLM_MODEL} #gpt-4o
   model_supports_json: true # recommended if this is available for your model.
@@ -33,10 +33,10 @@ embeddings:
   async_mode: threaded # or asyncio
   # target: required # or all
   llm:
-    api_key: ${GRAPHRAG_API_KEY} #'8e343c29b51d41e288b8f2a8abe469fd'
+    api_key: ${GRAPHRAG_API_KEY}
     type: azure_openai_embedding # or azure_openai_embedding
     model: ${GRAPHRAG_EMBEDDING_MODEL} #text-embedding-ada-002
-    api_base: ${GRAPHRAG_EMBEDDING_API_BASE} #https://tutorial-oai.openai.azure.com
+    api_base: ${GRAPHRAG_EMBEDDING_API_BASE}
     api_version: ${GRAPHRAG_API_VERSION}
     # organization: <organization_id>
     deployment_name: ${GRAPHRAG_EMBEDDING_DEPLOYMENT_NAME} #text-embedding-ada-002
